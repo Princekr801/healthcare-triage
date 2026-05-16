@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: healthcare-triage-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NEO4J_URI
+        sync: false
+      - key: NEO4J_USER
+        value: neo4j
+      - key: NEO4J_PASSWORD
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: MONGODB_DB
+        value: healthcare_triage
+      - key: CORS_ORIGINS
+        sync: false
+      - key: USE_BIOBERT
+        value: "false"

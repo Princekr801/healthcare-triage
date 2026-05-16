@@ -1,0 +1,86 @@
+services:
+  neo4j:
+    image: neo4j:5.26-community
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      NEO4J_AUTH: neo4j/healthcare123
+      NEO4J_PLUGINS: '["apoc"]'
+    volumes:
+      - neo4j_data:/data
+      - ./neo4j/seed.cypher:/seed.cypher:ro
+    healthcheck:
+      test: ["CMD", "cypher-shell", "-u", "neo4j", "-p", "healthcare123", "RETURN 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  neo4j-seed:
+    image: neo4j:5.26-community
+    depends_on:
+      neo4j:
+        condition: service_healthy
+    volumes:
+      - ./neo4j/seed.cypher:/seed.cypher:ro
+    entrypoint:
+      - cypher-shell
+      - -a
+      - bolt://neo4j:7687
+      - -u
+      - neo4j
+      - -p
+      - healthcare123
+      - -f
+      - /seed.cypher
+    restart: "no"
+
+  mongodb:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  api:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      NEO4J_URI: bolt://neo4j:7687
+      NEO4J_USER: neo4j
+      NEO4J_PASSWORD: healthcare123
+      MONGODB_URI: mongodb://mongodb:27017
+      MONGODB_DB: healthcare_triage
+      CORS_ORIGINS: http://localhost:5173,http://localhost:3000,http://localhost
+      USE_BIOBERT: "false"
+    depends_on:
+      neo4j-seed:
+        condition: service_completed_successfully
+      mongodb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: ""
+    ports:
+      - "3000:80"
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  neo4j_data:
+  mongo_data:
