@@ -15,21 +15,21 @@ export default function TriageResult({ result }) {
 
       {result.llm_summary && (
         <blockquote className="llm-summary">
-          <span>AI clinical note</span>
+          <span>Clinician Summary & Assessment</span>
           {result.llm_summary}
         </blockquote>
       )}
 
       <div className="symptoms">
-        <h4>Extracted symptoms</h4>
+        <h4>Identified Clinical Indicators</h4>
         {result.clinical_data.symptoms.length === 0 ? (
-          <p className="muted">No mapped symptoms — describe symptoms more specifically.</p>
+          <p className="muted">No specific clinical indicators identified. Please provide more descriptive details.</p>
         ) : (
           <ul>
             {result.clinical_data.symptoms.map((s) => (
               <li key={s.id}>
                 <span>{s.name}</span>
-                <span className="conf">{(s.confidence * 100).toFixed(0)}%</span>
+                <span className="conf">{(s.confidence * 100).toFixed(0)}% Match</span>
               </li>
             ))}
           </ul>
@@ -51,7 +51,7 @@ export default function TriageResult({ result }) {
 
       {result.matches?.length > 0 && (
         <div className="matches">
-          <h4>Neo4j graph matches</h4>
+          <h4>Clinical Correlation & Differential Insights</h4>
           <ul>
             {result.matches.map((m) => (
               <li key={m.disease}>
@@ -64,13 +64,47 @@ export default function TriageResult({ result }) {
       )}
 
       <div className="handoff">
-        <h4>MongoDB handoff</h4>
+        <h4>Secure Clinical Handoff</h4>
         <dl>
-          <dt>Session</dt>
+          <dt>Session ID</dt>
           <dd className="mono">{result.session_id}</dd>
-          <dt>Report ID</dt>
-          <dd className="mono">{result.handoff_id || '—'}</dd>
+          <dt>Assessment ID</dt>
+          <dd className="mono">{result.handoff_id || 'Generating...'}</dd>
         </dl>
+        <button 
+          className="download-report-btn"
+          onClick={() => {
+            const report = `
+CLINICAL TRIAGE REPORT
+----------------------
+Session: ${result.session_id}
+Assessment ID: ${result.handoff_id}
+Urgency: ${result.urgency_level}
+Primary Assessment: ${result.primary_assessment}
+
+CLINICAL SUMMARY:
+${result.llm_summary || 'No summary generated.'}
+
+SYMPTOMS IDENTIFIED:
+${result.clinical_data.symptoms.map(s => `- ${s.name} (${(s.confidence * 100).toFixed(0)}%)`).join('\n')}
+
+RISK FACTORS:
+${result.clinical_data.risk_factors.join(', ') || 'None reported'}
+
+ACTION TAKEN:
+${result.action_taken}
+            `.trim();
+            
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `handoff-report-${result.session_id.slice(0, 8)}.txt`;
+            a.click();
+          }}
+        >
+          📄 Download Clinical Report
+        </button>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import logging
 import uuid
 
-from app.models import ClinicalData, SymptomEntity, TriageResponse
+from app.models import ClinicalData, SymptomEntity, TriageResponse, TriageResultPayload
 from app.services.mongodb_store import MongoHandoffStore
 from app.services.neo4j_graph import Neo4jGraph
 from app.services.ner import extract_symptoms
@@ -40,7 +40,7 @@ def _rule_engine(symptom_ids: list[str], risk_factors: list[str]) -> dict | None
     if "sym_chest_pain" in ids and "hypertension" in risks:
         return {
             "urgency_level": "Level 1 (Emergency)",
-            "primary_assessment": "Cardiac Event Risk — Chest Pain with Hypertension",
+            "primary_assessment": "Cardiac Event Risk - Chest Pain with Hypertension",
             "action": "EMERGENCY_HALT",
             "action_taken": "Emergency Map Routed",
             "map_required": True,
@@ -49,7 +49,7 @@ def _rule_engine(symptom_ids: list[str], risk_factors: list[str]) -> dict | None
     if "sym_fever" in ids and "sym_dyspnea" in ids:
         return {
             "urgency_level": "Level 2 (Urgent)",
-            "primary_assessment": "Possible Respiratory Infection — Urgent Evaluation",
+            "primary_assessment": "Possible Respiratory Infection - Urgent Evaluation",
             "action": "URGENT_CARE",
             "action_taken": "Urgent Care Routing Recommended",
             "map_required": True,
@@ -58,7 +58,7 @@ def _rule_engine(symptom_ids: list[str], risk_factors: list[str]) -> dict | None
     if "sym_headache" in ids and "sym_nausea" in ids:
         return {
             "urgency_level": "Level 2 (Urgent)",
-            "primary_assessment": "Neurological Symptoms — Urgent Assessment",
+            "primary_assessment": "Neurological Symptoms - Urgent Assessment",
             "action": "URGENT_CARE",
             "action_taken": "Urgent Care Routing Recommended",
             "map_required": False,
@@ -160,7 +160,7 @@ async def run_triage(
         else:
             urgency = "Level 3 (Self-Care)"
             assessment = (
-                "No high-risk symptom pattern detected — monitor and seek care if worsening"
+                "No high-risk symptom pattern detected - monitor and seek care if worsening"
             )
             action = "SELF_CARE"
             action_taken = "Self-Care Guidance Provided"

@@ -13,10 +13,17 @@ const RISK_OPTIONS = [
   'Pregnancy',
 ];
 
+const COMMON_SYMPTOMS = [
+  { name: 'Fever', icon: '🌡️', solution: 'Rest, hydration, and antipyretics if necessary.' },
+  { name: 'Headache', icon: '🧠', solution: 'Quiet environment, hydration, and monitoring.' },
+  { name: 'Cough', icon: '💨', solution: 'Warm fluids, humidity, and throat lozenges.' },
+  { name: 'Nausea', icon: '🤢', solution: 'Bland diet (BRAT), hydration, and rest.' },
+];
+
 const EXAMPLES = [
-  'I have severe chest pain and shortness of breath.',
-  'Mild headache and nausea since this morning.',
-  'High fever with difficulty breathing for 2 days.',
+  'Persistent dry cough with mild fever.',
+  'Severe pressure-like chest pain for 20 minutes.',
+  'Sudden dizziness and blurred vision.',
 ];
 
 export default function TriageApp() {
@@ -28,6 +35,9 @@ export default function TriageApp() {
   const [error, setError] = useState(null);
   const [health, setHealth] = useState(null);
 
+  const [showSupport, setShowSupport] = useState(false);
+  const [showAppointment, setShowAppointment] = useState(false);
+
   useEffect(() => {
     checkHealth()
       .then(setHealth)
@@ -38,6 +48,10 @@ export default function TriageApp() {
     setRiskFactors((prev) =>
       prev.includes(factor) ? prev.filter((f) => f !== factor) : [...prev, factor],
     );
+  };
+
+  const scrollToTriage = () => {
+    document.getElementById('triage-tool').scrollIntoView({ behavior: 'smooth' });
   };
 
   const handleTriage = useCallback(async () => {
@@ -64,27 +78,48 @@ export default function TriageApp() {
 
   return (
     <div className="app">
+      <nav className="nav">
+        <div className="nav__logo">
+          <span className="nav__icon">✚</span> Care<span>Route</span>
+        </div>
+        <div className="nav__links">
+          <a href="#symptoms">Common Symptoms</a>
+          <a href="#triage-tool">Clinical Triage</a>
+          <button className="btn btn--nav" onClick={() => setShowAppointment(true)}>Find Clinic</button>
+        </div>
+      </nav>
+
       <header className="hero">
-        <div className="hero__badge">✨ Premium Triage Engine</div>
+        <div className="hero__badge">Clinical Intelligence Platform</div>
         <h1 className="hero__title">
-          Care<span>Route</span>
+          Modern Care <span>Starts Here</span>
         </h1>
         <p className="hero__subtitle">
-          Next-generation clinical symptom triage with graph reasoning and real-time emergency routing.
-          <br/><i>Not a substitute for professional medical advice.</i>
+          An intelligent clinical intake platform designed to bridge the gap between patient symptoms and professional care. 
+          By prioritizing diagnostic efficiency and risk-stratified guidance, we help you navigate your health journey with precision.
         </p>
-        <div className="hero__status">
-          <span className={`dot dot--${health?.status === 'ok' ? 'ok' : 'warn'}`} />
-          API {health?.status === 'ok' ? 'connected' : 'checking…'}
-          {health?.neo4j !== undefined && (
-            <span className="hero__meta">
-              Neo4j {health.neo4j ? '✓' : '✗'} · Mongo {health.mongodb ? '✓' : '✗'}
-            </span>
-          )}
-        </div>
+        <button className="btn btn--primary btn--hero" onClick={scrollToTriage}>
+          Begin Clinical Assessment
+        </button>
       </header>
 
-      <main className="grid">
+      <section id="symptoms" className="common-symptoms">
+        <div className="section-header">
+          <h2>Common Symptoms & Guidance</h2>
+          <p>Preliminary guidance for frequently encountered conditions.</p>
+        </div>
+        <div className="symptoms-grid">
+          {COMMON_SYMPTOMS.map((s) => (
+            <div key={s.name} className="symptom-card">
+              <div className="symptom-card__icon">{s.icon}</div>
+              <h3>{s.name}</h3>
+              <p>{s.solution}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <main id="triage-tool" className="grid">
         <section className="panel panel--input">
           <h2>Describe your symptoms</h2>
           <textarea
@@ -140,8 +175,8 @@ export default function TriageApp() {
         <section className="panel panel--result">
           {!res && !loading && (
             <div className="empty-state">
-              <div className="empty-state__icon">⌘</div>
-              <p>Submit your symptoms to receive an instant clinical triage assessment, including Neo4j graph matches and an encrypted handoff report.</p>
+              <div className="empty-state__icon">✚</div>
+              <p>Ready to assist. Please describe your symptoms and select any relevant risk factors to begin your comprehensive health assessment.</p>
             </div>
           )}
           {loading && (
@@ -150,7 +185,6 @@ export default function TriageApp() {
               <div className="skeleton skeleton-text"></div>
               <div className="skeleton skeleton-text"></div>
               <div className="skeleton skeleton-text short"></div>
-              <div className="skeleton skeleton-card"></div>
               <div className="skeleton skeleton-card"></div>
             </div>
           )}
@@ -171,10 +205,87 @@ export default function TriageApp() {
       </main>
 
       <footer className="footer">
-        <p>
-          Architecture: React → FastAPI → BioBERT (NER) → Neo4j → Rule/LLM Triage → MongoDB
-        </p>
+        <div className="footer__grid">
+          <div className="footer__col">
+            <div className="footer__logo">Care<span>Route</span></div>
+            <p>Advancing clinical outcomes through intelligent symptom navigation and diagnostic efficiency.</p>
+            <div className="footer__socials">
+              <a href="https://github.com/Princekr801" target="_blank" rel="noreferrer">GitHub</a>
+              <a href="https://linkedin.com/in/princekr801" target="_blank" rel="noreferrer">LinkedIn</a>
+            </div>
+          </div>
+          <div className="footer__col">
+            <h4>Solutions</h4>
+            <a href="#triage-tool">Symptom Assessment</a>
+            <a href="#">Clinical Intake</a>
+            <a href="#">Risk Stratification</a>
+            <a href="#">Patient Guidance</a>
+          </div>
+          <div className="footer__col">
+            <h4>Resources</h4>
+            <a href="#">About Our Chatbot</a>
+            <a href="#">Clinical Tools</a>
+            <a href="#">Documentation</a>
+            <a href="#">Support Center</a>
+          </div>
+          <div className="footer__col">
+            <h4>Company</h4>
+            <a href="#">Work With Us</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Disclaimer</a>
+          </div>
+        </div>
+        <div className="footer__bottom">
+          <p>© 2026 CareRoute Clinical Intelligence. All rights reserved.</p>
+          <div className="footer__status">
+            <span className={`dot dot--${health?.status === 'ok' ? 'ok' : 'warn'}`} />
+            Clinical Nodes: {health?.status === 'ok' ? 'Active' : 'Standby'}
+          </div>
+        </div>
       </footer>
+
+      {/* Floating Action Pop-ups */}
+      <div className="fab-container">
+        <button className="fab fab--support" onClick={() => setShowSupport(!showSupport)}>
+          <span>?</span>
+        </button>
+        <button className="fab fab--appointment" onClick={() => setShowAppointment(!showAppointment)}>
+          <span>📅</span>
+        </button>
+      </div>
+
+      {showSupport && (
+        <div className="pop-up pop-up--support">
+          <div className="pop-up__header">
+            <h4>Clinical Support</h4>
+            <button onClick={() => setShowSupport(false)}>×</button>
+          </div>
+          <div className="pop-up__body">
+            <p>Do you have a question about the assessment? Our team is here to assist.</p>
+            <button className="btn btn--small">Chat with Support</button>
+          </div>
+        </div>
+      )}
+
+      {showAppointment && (
+        <div className="pop-up pop-up--appointment">
+          <div className="pop-up__header">
+            <h4>Next Steps</h4>
+            <button onClick={() => setShowAppointment(false)}>×</button>
+          </div>
+          <div className="pop-up__body">
+            <p>Would you like to locate the nearest clinic or schedule an appointment?</p>
+            <div className="pop-up__actions">
+              <button className="btn btn--small btn--primary" onClick={() => {
+                scrollToTriage();
+                setShowAppointment(false);
+              }}>Locate Clinic</button>
+              <button className="btn btn--small">Book Appointment</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
