@@ -1,15 +1,5 @@
 {
   "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
-  "framework": "vite",
-  "rewrites": [
-    {
-      "source": "/triage",
-      "destination": "https://YOUR_RENDER_API_URL/triage"
-    },
-    {
-      "source": "/health",
-      "destination": "https://YOUR_RENDER_API_URL/health"
-    }
-  ]
+  "framework": "vite"
 }

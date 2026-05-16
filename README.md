@@ -1,79 +1,62 @@
-# CareRoute — Healthcare Symptom Checker & Triage Bot
+# CareRoute ✨ Premium Healthcare Triage Platform
 
-Next-generation clinical triage platform built from the architecture spec:
+A next-generation clinical triage platform built with a high-end dynamic UI and advanced AI-driven architecture.
 
-**React UI → FastAPI → BioBERT (NER) → Neo4j (Graph) → Rule/LLM Triage → MongoDB**
+**React UI (Vite) → FastAPI → BioBERT (NER) → Neo4j (Graph) → Rule/LLM Triage → MongoDB**
 
 > **Disclaimer:** For educational/demo purposes only. Not medical advice. In an emergency, call **911**.
 
 ## Features
 
-- **Synonym + BioBERT NER** — extracts symptoms from free text (`USE_BIOBERT=true` optional)
-- **Deterministic rule engine** — e.g. chest pain + dyspnea → Level 1 emergency halt
-- **Neo4j knowledge graph** — disease–symptom probability matching
-- **MongoDB handoff reports** — encrypted patient ID, session UUID, full clinical payload
-- **Optional LLM summary** — set `OPENAI_API_KEY` for clinician notes
-- **Emergency UI** — red alert banner, 911 CTA, OpenStreetMap hospital routing
+- **Premium UI Redesign:** Dark mode glassmorphism with dynamic gradients, sleek micro-animations, and skeleton loading states.
+- **Dynamic Geolocation Map:** Uses browser Geolocation API to instantly plot your location and route you to the nearest emergency facilities.
+- **BioBERT NER & Synonyms:** Accurately extracts clinical symptoms from free text (`USE_BIOBERT=true`).
+- **Deterministic Rule Engine:** e.g., chest pain + dyspnea → Level 1 emergency halt.
+- **Neo4j Knowledge Graph:** Maps extracted symptoms to disease probabilities.
+- **MongoDB Handoff:** Stores encrypted patient ID, session UUID, and full clinical payload for provider handoff.
+- **AI Clinician Notes:** Automatically synthesizes a 2-sentence summary for the receiving physician (`OPENAI_API_KEY`).
+- **Emergency UI:** Immediate red alert pulsing banner and one-tap 911 CTA.
 
-## Quick start (Docker)
+## Quick Start (Docker)
 
 ```bash
-cd healthcare-triage
 docker compose up --build
 ```
 
 | Service | URL |
 |---------|-----|
 | **Web UI** | http://localhost:3000 |
-| **API docs** | http://localhost:8000/docs |
+| **API Docs** | http://localhost:8000/docs |
 | **Neo4j Browser** | http://localhost:7474 (neo4j / healthcare123) |
 
-### Test emergency triage
-
+### Test Triage
 Enter: *"I have severe chest pain and shortness of breath"* + risk factor **Hypertension**.
 
-## Local development
+## Deployment
 
-### Backend
+### Vercel + Render (Split Deployment)
+1. **Database Setup:** 
+   - Deploy **MongoDB Atlas** (Free Tier) and note the `MONGODB_URI`.
+   - Deploy **Neo4j Aura** (Free Tier), run `neo4j/seed.cypher` using the console, and note credentials.
+2. **Backend (Render / Railway):**
+   - Connect your GitHub repo and select the `backend` directory.
+   - Deploy as a Docker service or standard Python web service.
+   - Set env vars: `MONGODB_URI`, `NEO4J_URI`, `NEO4J_PASSWORD`.
+   - Note your Backend API URL.
+3. **Frontend (Vercel):**
+   - Connect the repo to Vercel and select `frontend` as the root directory.
+   - Set the `VITE_API_URL` environment variable to your Backend API URL (e.g., `https://my-backend.onrender.com`).
+   - Deploy.
 
+### Full-Stack VPS Deployment (Docker)
+Push the repository to a VPS (DigitalOcean, AWS, etc.) and run:
 ```bash
-cd backend
-python -m venv .venv
-.venv\Scripts\activate   # Windows
-pip install -r requirements.txt
-copy ..\.env.example .env
-uvicorn main:app --reload
+docker compose up -d
 ```
+The application handles its own Nginx proxy routing via the frontend container.
 
-Requires Neo4j + MongoDB running (`docker compose up neo4j mongodb neo4j-seed`).
-
-### Frontend
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Open http://localhost:5173 (proxies `/triage` to API).
-
-## Deploy
-
-### Full stack — Docker (VPS, Railway, etc.)
-
-Push repo and run `docker compose up -d` on any host with Docker.
-
-### Split deploy
-
-1. **MongoDB Atlas** — free cluster, set `MONGODB_URI`
-2. **Neo4j Aura** — free tier, set `NEO4J_URI` / credentials, run `neo4j/seed.cypher`
-3. **Render** — deploy API from `backend/Dockerfile` using `render.yaml`
-4. **Vercel** — deploy `frontend/`, set `VITE_API_URL` to Render API URL, update `vercel.json` rewrites
-
-## API
-
+## Architecture & API
 `POST /triage`
-
 ```json
 {
   "user_input": "chest pain and shortness of breath",
@@ -82,26 +65,4 @@ Push repo and run `docker compose up -d` on any host with Docker.
 }
 ```
 
-## MongoDB handoff schema
-
-```json
-{
-  "patient_id": "enc_…",
-  "session_id": "uuid",
-  "triage_result": {
-    "urgency_level": "Level 1 (Emergency)",
-    "primary_assessment": "Potential Acute Myocardial Infarction",
-    "action_taken": "Emergency Map Routed"
-  },
-  "clinical_data": {
-    "symptoms": [{"id": "sym_chest_pain", "name": "Chest Pain", "confidence": 0.98}],
-    "risk_factors": ["Hypertension"]
-  }
-}
-```
-
-## Original repo
-
-Cloned from [Healthcare-Symptom-Checker-Triage-Bot](https://github.com/Srilipsahoo67-ship-it/Healthcare-Symptom-Checker-Triage-Bot) (unavailable publicly — rebuilt as **CareRoute v2**).
-
-Built by [Princekr801](https://github.com/Princekr801).
+Built by [Princekr801](https://github.com/Princekr801). Upgraded to Next-Level Premium.

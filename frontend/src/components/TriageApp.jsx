@@ -65,13 +65,13 @@ export default function TriageApp() {
   return (
     <div className="app">
       <header className="hero">
-        <div className="hero__badge">BioBERT · Neo4j · MongoDB</div>
+        <div className="hero__badge">✨ Premium Triage Engine</div>
         <h1 className="hero__title">
           Care<span>Route</span>
         </h1>
         <p className="hero__subtitle">
-          Clinical-grade symptom triage with graph reasoning and emergency routing.
-          Not a substitute for professional medical advice.
+          Next-generation clinical symptom triage with graph reasoning and real-time emergency routing.
+          <br/><i>Not a substitute for professional medical advice.</i>
         </p>
         <div className="hero__status">
           <span className={`dot dot--${health?.status === 'ok' ? 'ok' : 'warn'}`} />
@@ -140,14 +140,18 @@ export default function TriageApp() {
         <section className="panel panel--result">
           {!res && !loading && (
             <div className="empty-state">
-              <div className="empty-state__icon">◈</div>
-              <p>Submit symptoms to see urgency level, graph matches, and handoff report.</p>
+              <div className="empty-state__icon">⌘</div>
+              <p>Submit your symptoms to receive an instant clinical triage assessment, including Neo4j graph matches and an encrypted handoff report.</p>
             </div>
           )}
           {loading && (
-            <div className="loading">
-              <div className="spinner" />
-              <p>BioBERT NER → Neo4j graph → Rule engine → MongoDB handoff</p>
+            <div className="loading-container">
+              <div className="skeleton skeleton-title"></div>
+              <div className="skeleton skeleton-text"></div>
+              <div className="skeleton skeleton-text"></div>
+              <div className="skeleton skeleton-text short"></div>
+              <div className="skeleton skeleton-card"></div>
+              <div className="skeleton skeleton-card"></div>
             </div>
           )}
           {res && (

@@ -1,9 +1,12 @@
+import logging
 import uuid
 
 from app.models import ClinicalData, SymptomEntity, TriageResponse
 from app.services.mongodb_store import MongoHandoffStore
 from app.services.neo4j_graph import Neo4jGraph
 from app.services.ner import extract_symptoms
+
+logger = logging.getLogger("triage_api.engine")
 
 
 URGENCY_RANK = {
@@ -100,7 +103,11 @@ async def _llm_summary(user_input: str, assessment: str, symptoms: list[str]) ->
             )
             resp.raise_for_status()
             return resp.json()["choices"][0]["message"]["content"].strip()
-    except Exception:
+    except httpx.TimeoutException:
+        logger.warning("OpenAI API timeout. Skipping LLM summary.")
+        return None
+    except Exception as e:
+        logger.error(f"OpenAI API error: {e}", exc_info=True)
         return None
 
 
@@ -165,9 +172,16 @@ async def run_triage(
         action_taken=action_taken,
     )
 
-    handoff_id = await store.save_handoff(
-        session_id, patient_id, triage_payload, clinical
-    )
+    try:
+        handoff_id = await store.save_handoff(
+            session_id, patient_id, triage_payload, clinical
+        )
+        logger.info(f"Saved handoff for session {session_id} -> MongoDB ID: {handoff_id}")
+    except Exception as e:
+        logger.error(f"Failed to save handoff to MongoDB: {e}", exc_info=True)
+        handoff_id = "error_saving"
+
+    logger.info(f"Triage complete for session {session_id} - Urgency: {urgency}")
 
     llm_summary = await _llm_summary(
         user_input, assessment, [s.name for s in extracted]

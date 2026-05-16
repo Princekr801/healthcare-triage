@@ -3,17 +3,30 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+import logging
+import sys
+
 from app.config import settings
 from app.routers import triage
 from app.services.mongodb_store import MongoHandoffStore
 from app.services.neo4j_graph import Neo4jGraph
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    handlers=[logging.StreamHandler(sys.stdout)],
+)
+logger = logging.getLogger("triage_api")
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    logger.info("Initializing Neo4j Graph Connection...")
     app.state.neo4j = Neo4jGraph()
+    logger.info("Initializing MongoDB Connection...")
     app.state.mongo = MongoHandoffStore()
     yield
+    logger.info("Shutting down connections...")
     app.state.neo4j.close()
     app.state.mongo._client.close()
 
@@ -35,6 +48,17 @@ app.add_middleware(
 )
 
 app.include_router(triage.router)
+
+from fastapi.responses import JSONResponse
+from fastapi import Request
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Unhandled Exception on {request.url.path}: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal Server Error", "error": str(exc)},
+    )
 
 
 @app.get("/health")
