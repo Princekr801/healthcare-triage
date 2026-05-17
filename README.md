@@ -7,6 +7,9 @@
 
 CareRoute is a premium, production-grade clinical triage platform designed to streamline the patient intake process. By combining **Graph-based clinical reasoning** with **Real-time emergency routing**, CareRoute provides patients with immediate guidance while delivering secure, clinician-ready handoff reports.
 
+### 🌐 Live Demo
+**[Launch CareRoute Platform](https://healthcare-triage.vercel.app)**
+
 ---
 
 ## 🌟 Key Features
