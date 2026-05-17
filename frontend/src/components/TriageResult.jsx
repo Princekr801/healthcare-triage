@@ -4,12 +4,24 @@ const URGENCY_CLASS = {
   'Level 3 (Self-Care)': 'level-3',
 };
 
+const LEVEL_DESCRIPTIONS = {
+  'Level 1 (Emergency)': '🚨 CRITICAL: This indicates a high-risk or life-threatening condition. Please seek immediate emergency medical care (go to the nearest Emergency Room or call emergency services). Do not attempt to drive yourself if experiencing severe symptoms.',
+  'Level 2 (Urgent)': '⚠️ URGENT: While not immediately life-threatening, your symptoms suggest a condition that needs timely evaluation. You should visit a local Urgent Care clinic or consult a physician within 24 hours.',
+  'Level 3 (Self-Care)': '✅ SELF-CARE: Your symptoms match mild, low-risk conditions. It is generally safe to rest, stay hydrated, and manage symptoms at home. However, please monitor your condition closely and seek care if your symptoms worsen.',
+};
+
 export default function TriageResult({ result }) {
   const levelClass = URGENCY_CLASS[result.urgency_level] || 'level-3';
+  const levelDesc = LEVEL_DESCRIPTIONS[result.urgency_level] || LEVEL_DESCRIPTIONS['Level 3 (Self-Care)'];
 
   return (
     <div className="result">
-      <div className={`urgency-badge ${levelClass}`}>{result.urgency_level}</div>
+      <div className="result-header">
+        <div className={`urgency-badge ${levelClass}`}>{result.urgency_level}</div>
+      </div>
+      <div className={`level-explanation-box ${levelClass}-bg`}>
+        <p>{levelDesc}</p>
+      </div>
       <h3>{result.primary_assessment}</h3>
       <p className="result__action">{result.action_taken}</p>
 

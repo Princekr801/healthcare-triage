@@ -83,6 +83,7 @@ export default function TriageApp() {
           <span className="nav__icon">✚</span> Care<span>Route</span>
         </div>
         <div className="nav__links">
+          <a href="#triage-guide">Triage Guide</a>
           <a href="#symptoms">Common Symptoms</a>
           <a href="#triage-tool">Clinical Triage</a>
           <button className="btn btn--nav" onClick={() => setShowAppointment(true)}>Find Clinic</button>
@@ -102,6 +103,52 @@ export default function TriageApp() {
           Begin Clinical Assessment
         </button>
       </header>
+
+      <section id="triage-guide" className="triage-guide">
+        <div className="section-header">
+          <h2>Clinical Triage Guide</h2>
+          <p>Learn how the CareRoute platform guides your medical journey in three simple steps.</p>
+        </div>
+        
+        <div className="guide-steps">
+          <div className="guide-step">
+            <div className="guide-step__number">01</div>
+            <h3>Describe Symptoms</h3>
+            <p>Type how you feel in plain language. Select any personal risk factors to customize the diagnostic sensitivity.</p>
+          </div>
+          <div className="guide-step">
+            <div className="guide-step__number">02</div>
+            <h3>Automatic Triage</h3>
+            <p>Our intelligent system matches clinical indicators to categorize the severity level and provide direct medical instructions.</p>
+          </div>
+          <div className="guide-step">
+            <div className="guide-step__number">03</div>
+            <h3>Find Immediate Care</h3>
+            <p>Get directions to nearest appropriate facilities (ERs or local Pharmacies) and download a doctor-ready Clinical Report.</p>
+          </div>
+        </div>
+
+        <div className="levels-explanation">
+          <h3>Understanding Triage Severity Levels</h3>
+          <div className="levels-grid">
+            <div className="level-card level-card--1">
+              <div className="level-card__badge level-1">Level 1 (Emergency)</div>
+              <h4>Critical & Life-Threatening</h4>
+              <p>For high-risk conditions like crushing chest pain, difficulty breathing, or sudden numbness. Requires calling emergency services or immediate ER transfer.</p>
+            </div>
+            <div className="level-card level-card--2">
+              <div className="level-card__badge level-2">Level 2 (Urgent Care)</div>
+              <h4>Urgent Medical Attention</h4>
+              <p>For conditions like high persistent fever, severe sprains, deep cuts, or moderate infections. Needs professional assessment at an urgent care clinic within 24 hours.</p>
+            </div>
+            <div className="level-card level-card--3">
+              <div className="level-card__badge level-3">Level 3 (Self-Care)</div>
+              <h4>Mild & Manageable at Home</h4>
+              <p>For mild cough, slight fever, or minor headache. Safe to manage at home with rest, over-the-counter medicine, hydration, and close symptom tracking.</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <section id="symptoms" className="common-symptoms">
         <div className="section-header">
